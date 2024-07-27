@@ -23528,7 +23528,7 @@ var require_jsx_dev_runtime = __commonJS((exports, module) => {
 var import_react = __toESM(require_react(), 1);
 var client = __toESM(require_client(), 1);
 
-// /Users/vincent/bun-template/example/node_modules/bun-template/dist/index.js
+// /Users/vincent/data-client/example/node_modules/bun-template/dist/index.js
 var wZ = function() {
   return MJ.jsxDEV(MJ.Fragment, { children: "Hello" }, undefined, false, undefined, this);
 };
