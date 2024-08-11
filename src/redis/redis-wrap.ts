@@ -3,13 +3,14 @@ import { DataClient, ExpirationOptions } from "@/interface/data-client";
 export class RedisWrap implements DataClient {
   #redis?: DataClient;
   #lastAccess = 0;
-  
+
   constructor(private redisProducer: (onFail?: () => void) => Promise<DataClient>) {
   }
 
   async #getRedis() {
     const now = Date.now();
     if (!this.#redis || now - this.#lastAccess > 3600 * 1000) { // 1 hour
+      console.log(">>>", this.#redis);
       this.#redis?.quit();
       this.#redis = await this.redisProducer(() => {
         this.#redis = undefined;
