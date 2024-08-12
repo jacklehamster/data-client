@@ -11,12 +11,13 @@ export async function connectRedis(onFail?: () => void): Promise<DataClient> {
   client.on('connect', () => console.log('Redis client connecting'));
   client.on('ready', () => console.log('Redis client connected'));
   client.on('error', (err) => {
+    process.off("SIGINT", onQuit);
     console.error('Redis client error', err);
     onFail?.();
   });
   client.on('end', () => {
+    process.off("SIGINT", onQuit);
     console.log('Redis client disconnected');
-    onFail?.();
   });
   client.on('reconnecting', () => console.log('Redis client reconnecting'));
 
@@ -26,12 +27,14 @@ export async function connectRedis(onFail?: () => void): Promise<DataClient> {
     console.error('Failed to connect to Redis:', error);
   }
 
-  // Close the connection gracefully
-  process.on('SIGINT', async () => {
+  const onQuit = async () => {
     console.log("Server stopped. Closing Redis connection...");
     await client.quit();
     process.exit(0); // Exit the process forcefully
-  });
+  };
+
+  // Close the connection gracefully
+  process.on('SIGINT', onQuit);
 
   return client as DataClient; // Return the client for further use
 }

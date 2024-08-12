@@ -1,23 +1,43 @@
 import { DataClient, ExpirationOptions } from "@/interface/data-client";
 
-const RESET_TIME = 3600 * 1000; // 1 hour
+const RESET_TIME = 600 * 1000; // 10 minutes
+// const RESET_TIME = 10 * 1000; // 10 seconds
 
 export class RedisWrap implements DataClient {
   #redis?: DataClient;
-  #lastAccess = 0;
+  #cleanupTimeout?: Timer;
 
-  constructor(private redisProducer: (onFail?: () => void) => Promise<DataClient>) {
+  constructor(
+    private redisProducer: (onFail?: () => void) => Promise<DataClient>,
+    private cleanupTime = RESET_TIME) {
+  }
+
+  async cleanupRedis() {
+    const redis = this.#redis;
+    if (redis) {
+      this.#redis = undefined;
+      try {
+        const code = await redis?.quit();
+        console.log("Cleaned up redis. Quit code:", code);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    clearTimeout(this.#cleanupTimeout);
+    this.#cleanupTimeout = undefined;
+  }
+
+  resetTimeout() {
+    clearTimeout(this.#cleanupTimeout);
+    this.#cleanupTimeout = setTimeout(() => this.cleanupRedis(), this.cleanupTime);
   }
 
   async #getRedis() {
     const now = Date.now();
-    if (!this.#redis || now - this.#lastAccess > RESET_TIME) {
-      this.#redis?.quit();
-      this.#redis = await this.redisProducer(() => {
-        this.#redis = undefined;
-      });
+    if (!this.#redis) {
+      this.#redis = await this.redisProducer(() => this.cleanupRedis());
     }
-    this.#lastAccess = now;
+    this.resetTimeout();
     return this.#redis;
   }
 
