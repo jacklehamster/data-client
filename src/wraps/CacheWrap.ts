@@ -31,7 +31,7 @@ export class CacheWrap<T = any> implements DbApi<T> {
     return result;
   }
 
-  listKeys(keyprefix?: string, branch?: string, recursive?: boolean) {
-    return this.api.listKeys(keyprefix, branch, recursive);
+  listKeys(subfolder?: string, branch?: string, recursive?: boolean) {
+    return this.api.listKeys(subfolder, branch, recursive);
   }
 }
