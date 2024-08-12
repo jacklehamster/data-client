@@ -17,7 +17,7 @@ export interface ExpirationOptions {
 
 export interface DataClient {
   get<T = string | Blob | null>(key: string): Promise<T | null>;
-  set(key: string, value: string | Blob | null, options?: ExpirationOptions): Promise<string | Blob | null>;
+  set(key: string, value: string | Buffer | null, options?: ExpirationOptions): Promise<string | Buffer | null>;
   del(key: string): Promise<number>;
   quit(callback?: (err: Error | null, res: string) => void): Promise<string>;
 }

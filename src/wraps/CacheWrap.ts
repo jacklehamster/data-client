@@ -16,18 +16,22 @@ export class CacheWrap<T = any> implements DbApi<T> {
   async getData(key: string) {
     const cachedData = await this.redis.get(`${key}.data`);
     if (cachedData) {
-      const cachedSha = await this.redis.get<string>(`${key}.sha`);
-      const cachedType = await this.redis.get<string>(`${key}.type`);
-      return { data: cachedData as T, type: cachedType ?? undefined, sha: cachedSha };
+      const info = await this.redis.get<string>(`${key}.info`);
+      const [cachedSha, cachedType] = info?.split(",") ?? [null, null];
+      return {
+        data: (cachedType === "object" ? JSON.parse(cachedData as string) : cachedData) as T,
+        type: cachedType || null, sha: cachedSha || null,
+      };
     }
     const result = await this.api.getData(key);
-    this.redis.set(`${key}.data`, result.data);
-    this.redis.set(`${key}.sha`, result.sha);
-    this.redis.set(`${key}.type`, result.type ?? null);
+    console.log("Cache miss", key, result);
+    const type = result.type ?? "object";
+    this.redis.set(`${key}.data`, type === "object" ? JSON.stringify(result.data) : result.data);
+    this.redis.set(`${key}.info`, `${result.sha ?? ""},${type}`);
     return result;
   }
 
-  listKeys(keyprefix?: string, branch?: string, recursive?: number) {
+  listKeys(keyprefix?: string, branch?: string, recursive?: boolean) {
     return this.api.listKeys(keyprefix, branch, recursive);
   }
 }
