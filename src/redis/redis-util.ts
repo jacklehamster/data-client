@@ -13,7 +13,11 @@ export async function connectRedis(onFail?: () => void): Promise<DataClient> {
   client.on('error', (err) => {
     process.off("SIGINT", onQuit);
     console.error('Redis client error', err);
-    onFail?.();
+    try {
+      onFail?.();
+    } catch (e) {
+      console.error(e);
+    }
   });
   client.on('end', () => {
     process.off("SIGINT", onQuit);
