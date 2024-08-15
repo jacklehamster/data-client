@@ -1,6 +1,6 @@
 import { DataClient, ExpirationOptions } from "@/interface/data-client";
 
-const RESET_TIME = 600 * 1000; // 10 minutes
+const RESET_TIME = 60 * 1000; // 1 minutes
 // const RESET_TIME = 10 * 1000; // 10 seconds
 
 export class RedisWrap implements DataClient {
