@@ -4,7 +4,7 @@ import { RedisWrap, RedisWrapConfig } from "./redis/redis-wrap";
 
 export { CacheWrap } from "./wraps/CacheWrap";
 export { DataClient, ExpirationOptions } from "./interface/data-client";
-export { DbApi, SetDataOptions } from "./interface/db-api";
+export { DbApi } from "./interface/db-api";
 export { RedisWrap } from "./redis/redis-wrap";
 
 export { connectRedis };
