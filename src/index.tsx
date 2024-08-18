@@ -1,10 +1,10 @@
 import { DataClient } from "./interface/data-client";
-import { connectRedis, RedisConfig } from "./redis/redis-util";
+import { connectRedis } from "./redis/redis-util";
 import { RedisWrap, RedisWrapConfig } from "./redis/redis-wrap";
 
 export { CacheWrap } from "./wraps/CacheWrap";
 export { DataClient, ExpirationOptions } from "./interface/data-client";
-export { DbApi } from "./interface/db-api";
+export { DbApi, SetDataOptions } from "./interface/db-api";
 export { RedisWrap } from "./redis/redis-wrap";
 
 export { connectRedis };
