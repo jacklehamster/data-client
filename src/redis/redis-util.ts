@@ -1,11 +1,18 @@
 import { DataClient } from "../interface/data-client";
 import redis from "redis"
 
-export async function connectRedis(onFail?: () => void): Promise<DataClient> {
+export interface RedisConfig {
+  host?: string;
+  port?: number;
+  user?: string;
+  password?: string;
+}
+
+export async function connectRedis(onFail?: () => void, config: RedisConfig = {}): Promise<DataClient> {
   const client = redis.createClient({
-    url: `rediss://${process.env.REDIS_HOST ?? "oregon-redis.render.com"}:${process.env.REDIS_PORT ?? 6379}`,
-    username: process.env.REDIS_USER,
-    password: process.env.REDIS_PASSWORD,
+    url: `rediss://${config.host ?? process.env.REDIS_HOST ?? "oregon-redis.render.com"}:${config.port ?? process.env.REDIS_PORT ?? 6379}`,
+    username: config.user ?? process.env.REDIS_USER,
+    password: config.password ?? process.env.REDIS_PASSWORD,
   });
 
   client.on('connect', () => console.log('Redis client connecting'));

@@ -1,15 +1,20 @@
 import { DataClient, ExpirationOptions } from "@/interface/data-client";
+import { RedisConfig } from "./redis-util";
 
 const RESET_TIME = 60 * 1000; // 1 minutes
 // const RESET_TIME = 10 * 1000; // 10 seconds
+
+export interface RedisWrapConfig extends RedisConfig {
+  cleanupTime?: number;
+}
 
 export class RedisWrap implements DataClient {
   #redis?: DataClient;
   #cleanupTimeout?: Timer;
 
   constructor(
-    private redisProducer: (onFail?: () => void) => Promise<DataClient>,
-    private cleanupTime = RESET_TIME) {
+    private redisProducer: (onFail?: () => void, redisConfig?: RedisConfig) => Promise<DataClient>,
+    private config: RedisWrapConfig = {}) {
   }
 
   async cleanupRedis() {
@@ -29,13 +34,13 @@ export class RedisWrap implements DataClient {
 
   resetTimeout() {
     clearTimeout(this.#cleanupTimeout);
-    this.#cleanupTimeout = setTimeout(() => this.cleanupRedis(), this.cleanupTime);
+    this.#cleanupTimeout = setTimeout(() => this.cleanupRedis(), this.config.cleanupTime);
   }
 
   async #getRedis() {
     const now = Date.now();
     if (!this.#redis) {
-      this.#redis = await this.redisProducer(() => this.cleanupRedis());
+      this.#redis = await this.redisProducer(() => this.cleanupRedis(), this.config);
     }
     this.resetTimeout();
     return this.#redis;
