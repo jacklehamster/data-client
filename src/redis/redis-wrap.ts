@@ -66,9 +66,11 @@ export class RedisWrap implements DataClient {
       return null;
     }
   }
+
   async del(key: string): Promise<number> {
     return await this.#getRedis().then(r => r.del(key));
   }
+
   async quit(callback?: (err: Error | null, res: string) => void): Promise<string> {
     const result = await this.#getRedis().then(r => r.quit(callback));
     this.#redis = undefined;
