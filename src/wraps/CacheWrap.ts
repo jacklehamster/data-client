@@ -8,8 +8,7 @@ export class CacheWrap<T = any> implements DbApi<T> {
   async setData<T extends Object>(key: string, update: ((data: T) => Promise<T | undefined>) | T) {
     const result = await this.api.setData(key, update);
     this.redis.del(`${key}.data`);
-    this.redis.del(`${key}.sha`);
-    this.redis.del(`${key}.type`);
+    this.redis.del(`${key}.info`);
     return result;
   }
 
