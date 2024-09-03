@@ -51,7 +51,7 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "@the-brains/github-db": "^1.0.13",
+    "@the-brains/github-db": "^1.0.14",
     "redis": "^4.7.0"
   }
 }
