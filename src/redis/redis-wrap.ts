@@ -34,7 +34,7 @@ export class RedisWrap implements DataClient {
 
   resetTimeout() {
     clearTimeout(this.#cleanupTimeout);
-    this.#cleanupTimeout = setTimeout(() => this.cleanupRedis(), this.config.cleanupTime);
+    this.#cleanupTimeout = setTimeout(() => this.cleanupRedis(), this.config.cleanupTime ?? RESET_TIME);
   }
 
   async #getRedis() {
